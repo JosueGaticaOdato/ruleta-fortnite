@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const http = require('http');
 const { Server } = require('socket.io');
 const { WebcastPushConnection } = require('tiktok-live-connector');
@@ -11,7 +12,8 @@ const io = new Server(server, {
 });
 
 // Tu nombre de usuario de TikTok
-const tiktokUsername = 'enzopia';
+const tiktokUsername = process.env.USERNAME_TIKTOK;
+console.log(tiktokUsername)
 
 // Crear la conexión a TikTok
 const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
@@ -80,6 +82,7 @@ tiktokLiveConnection.connect().then(state => {
 
 // Iniciar el servidor local
 const PORT = process.env.PORT || 3001;
+//console.log(PORT);
 server.listen(PORT, () => {
     console.log('Servidor backend corriendo en http://localhost:3001');
 });
