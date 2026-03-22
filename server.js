@@ -41,44 +41,45 @@ function sortearRango() {
 }
 
 // Escuchar cuando alguien da Follow
-// tiktokLiveConnection.on('follow', (data) => {
-//     console.log(`¡${data.uniqueId} te ha seguido!`);
+tiktokLiveConnection.on('follow', (data) => {
+    console.log(`¡${data.uniqueId} te ha seguido!`);
     
-//     // Sorteamos el rango
-//     const rangoGanador = sortearRango();
-//     console.log(`Resultado de la ruleta: ${rangoGanador}`);
+    // Sorteamos el rango
+    const rangoGanador = sortearRango();
+    console.log(`Resultado de la ruleta: ${rangoGanador}`);
 
-//     // Le avisamos al frontend por WebSocket para que empiece a girar la ruleta
-//     io.emit('girarRuleta', { 
-//         usuario: data.uniqueId, 
-//         rango: rangoGanador 
-//     });
-// });
+    // Le avisamos al frontend por WebSocket para que empiece a girar la ruleta
+    io.emit('girarRuleta', { 
+        usuario: data.uniqueId, 
+        rango: rangoGanador 
+    });
+});
 
-// // Conectar a TikTok
-// tiktokLiveConnection.connect().then(state => {
-//     console.info(`Conectado al directo. ID de sala: ${state.roomId}`);
-// }).catch(err => {
-//     console.error('Error al conectar a TikTok. ¿Estás seguro de que estás en vivo?:', err);
-// });
+// Conectar a TikTok
+tiktokLiveConnection.connect().then(state => {
+    console.info(`Conectado al directo. ID de sala: ${state.roomId}`);
+}).catch(err => {
+    console.error('Error al conectar a TikTok. ¿Estás seguro de que estás en vivo?:', err);
+});
 
 // ==========================================
 // MODO PRUEBA: Simulador automático
 // ==========================================
 // Esto disparará una ruleta falsa cada 15 segundos para que puedas diseñar tranquilo.
 // Cuando vayas a hacer directo en TikTok, simplemente borrá o comentá estas líneas.
-setInterval(() => {
-    console.log("Testeando: Simulando un follow automático...");
-    const rangoGanador = sortearRango();
+// setInterval(() => {
+//     console.log("Testeando: Simulando un follow automático...");
+//     const rangoGanador = sortearRango();
     
-    io.emit('girarRuleta', { 
-        usuario: 'TestUser_' + Math.floor(Math.random() * 1000), 
-        rango: rangoGanador 
-    });
-}, 15000); 
-// ==========================================
+//     io.emit('girarRuleta', { 
+//         usuario: 'TestUser_' + Math.floor(Math.random() * 1000), 
+//         rango: rangoGanador 
+//     });
+// }, 15000); 
+// // ==========================================
 
 // Iniciar el servidor local
-server.listen(3001, () => {
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
     console.log('Servidor backend corriendo en http://localhost:3001');
 });
