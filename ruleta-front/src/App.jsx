@@ -19,7 +19,9 @@ const CONFIG_RANGOS = {
 const NOMBRES_RANGOS = Object.keys(CONFIG_RANGOS);
 
 // Conexion backend
-const socket = io('http://localhost:3001');
+//const socket = io('http://localhost:3001');
+const socket = io('https://ruleta-fortnite-backend.onrender.com');
+
 
 function App() {
   const [visible, setVisible] = useState(false); // Controla si todo se ve o no
