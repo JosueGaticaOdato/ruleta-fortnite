@@ -13,7 +13,7 @@ const io = new Server(server, {
 
 // Tu nombre de usuario de TikTok
 const tiktokUsername = process.env.USERNAME_TIKTOK;
-console.log(tiktokUsername)
+//console.log(tiktokUsername)
 
 // Crear la conexión a TikTok
 const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
