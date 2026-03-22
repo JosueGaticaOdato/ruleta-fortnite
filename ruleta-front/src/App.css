@@ -1,0 +1,337 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;900&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent; /* Fundamental para OBS */
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* --- NUEVA ESTRUCTURA GENERAL --- */
+.contenedor-general {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* La zona de la ruleta ahora maneja el fade in/out */
+.zona-ruleta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none; /* Evita clicks accidentales cuando está oculta */
+  z-index: 10;
+}
+
+.zona-ruleta.activo {
+  opacity: 1;
+}
+
+/* --- NUEVO: BANNER DE ESPERA ADAPTADO A 800px --- */
+.banner-espera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: transparent; 
+  
+  /* Ajustes para el ancho de 800px */
+  width: 85%; /* Ocupa el 85% de los 800px, dejando un lindo margen a los lados */
+  max-width: 650px; 
+  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+  padding: 25px 20px; 
+  
+  border-radius: 16px;
+  /* border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.8); */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.banner-espera.activo {
+  opacity: 1;
+}
+
+.banner-espera h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem; /* Un poco más chico para que entre "FOLLOW = RULETA" en una línea */
+  color: #fff;
+  margin: 0;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  /* text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000; */
+}
+
+.banner-espera p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 15px 0 0 0;
+  font-weight: 900;
+  /* text-shadow: 2px 2px 4px rgba(0,0,0,0.9); */
+  line-height: 1.4; /* Da espacio extra entre las líneas cuando el texto se divide */
+}
+
+.contenedor-pantalla {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Nuevas propiedades para la transición de aparición/desaparición */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none; /* Evita interacciones cuando está oculto */
+}
+
+.contenedor-pantalla.mostrar {
+  opacity: 1;
+}
+
+.contenedor-pantalla.ocultar {
+  opacity: 0;
+}
+
+/* Efecto cinematográfico sobre el stream al girar */
+.overlay-stream {
+  position: absolute;
+  inset: 0;
+  /* background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%); */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.overlay-stream.activo {
+  opacity: 1;
+}
+
+/* Contenedor principal de la ruleta */
+.contenedor-ruleta {
+  width: 100%;
+  height: 160px;
+  background: rgba(10, 10, 15, 0.9);
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 10;
+  transition: border-color 0.3s ease;
+}
+
+/* Contenedor principal de la ruleta */
+.contenedor-ruleta {
+  width: 100%;
+  height: 160px;
+  
+  /* --- CAMBIO: Fondo más transparente --- */
+  /* Reducimos la opacidad a 0.5 o 0.4 para que se fusione mejor con el juego */
+  background: rgba(10, 10, 15, 0.5);
+  
+  /* Mantenemos los bordes sutiles pero con menos opacidad */
+  border-top: 2px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+  
+  overflow: hidden;
+  position: relative;
+  
+  /* Mantenemos la sombra para dar algo de relieve sobre el juego */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 10;
+  transition: border-color 0.3s ease;
+
+  /* ========================================== */
+  /* --- MÁGIA: Transparencia real en bordes --- */
+  /* ========================================== */
+  /* Esto crea un desvanecimiento suave a transparente en los extremos (0% y 100%) */
+  /* Manteniendo el centro (entre 15% y 85%) totalmente opaco */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.contenedor-ruleta.brillo-borde {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* El marcador central, ahora más elegante */
+.marcador-centro {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #fff 20%, #fff 80%, transparent);
+  z-index: 20;
+  box-shadow: 0 0 15px #fff;
+}
+
+/* Sombras en los bordes para dar profundidad */
+.sombras-laterales {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #0a0a0f 0%, transparent 15%, transparent 85%, #0a0a0f 100%);
+  z-index: 15;
+  pointer-events: none;
+}
+
+.fila-ruleta {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px; /* Espacio entre cajas */
+}
+
+/* Estilo de cada cajita de rango */
+.caja-rango {
+  box-sizing: border-box; /* <--- ESTO SOLUCIONA EL DESFASE */
+  width: 150px;
+  height: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(20, 20, 25, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+/* Resplandor interior basado en el color del rango */
+.resplandor-interior {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, var(--rango-color) 0%, transparent 70%);
+  opacity: 0.2;
+  filter: blur(10px);
+}
+
+.img-rango {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 5px;
+  z-index: 5;
+  /* Sombra de alta calidad a la imagen */
+  filter: drop-shadow(0 0 10px var(--rango-color));
+}
+
+.nombre-rango {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: #ccc;
+  z-index: 5;
+  letter-spacing: 1px;
+}
+
+/* --- Cartel Ganador --- */
+.cartel-ganador {
+  /* Lo hacemos flotante para que no empuje la ruleta */
+  position: absolute;
+  top: calc(50% + 100px); /* Lo ubicamos 100px por debajo del centro de la pantalla */
+  left: 50%; /* Centrado horizontal */
+  
+  background: rgba(10, 10, 15, 0.95);
+  color: white;
+  padding: 25px 50px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  z-index: 100;
+  
+  /* Actualizamos la animación para que mantenga el centrado (translateX) */
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+  0% { transform: translate(-50%, 20px) scale(0.7); opacity: 0; }
+  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+.texto-seguidor {
+  font-size: 1.5em;
+  color: #fff;
+  margin: 0 0 15px 0;
+}
+
+.info-premio p {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #eee;
+}
+
+.img-ganador-cartel {
+  height: 120px;
+  width: auto;
+  margin: 15px 0;
+  filter: drop-shadow(0 0 20px var(--rango-color, #fff));
+}
+
+.nombre-ganador-cartel {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  margin: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px var(--rango-color, #fff);
+}
+
+/* --- Estilos Especiales para UNREAL --- */
+.ganador-unreal {
+  border: 2px solid #ff1493;
+  box-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+  animation: popIn 0.6s ease forwards, pulsoUnreal 2s infinite 0.6s;
+}
+
+.alerta-unreal {
+  margin-top: 20px;
+  background: linear-gradient(90deg, #ff1493, #8a2be2);
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@keyframes pulsoUnreal {
+  0% { box-shadow: 0 0 30px rgba(255, 20, 147, 0.5); }
+  50% { box-shadow: 0 0 50px rgba(255, 20, 147, 0.8); }
+  100% { box-shadow: 0 0 30px rgba(255, 20, 147, 0.5); }
+}
