@@ -64,7 +64,7 @@ body {
 
 .banner-espera h1 {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 3.5rem; /* Un poco más chico para que entre "FOLLOW = RULETA" en una línea */
+  font-size: 3.5rem;
   color: #fff;
   margin: 0;
   letter-spacing: 2px;
@@ -74,12 +74,10 @@ body {
 
 .banner-espera p {
   font-family: 'Roboto', sans-serif;
-  font-size: 1.3rem;
+  font-size: 2.2rem;
   color: #fff;
-  margin: 15px 0 0 0;
+  margin: 0;
   font-weight: 900;
-  /* text-shadow: 2px 2px 4px rgba(0,0,0,0.9); */
-  line-height: 1.4; /* Da espacio extra entre las líneas cuando el texto se divide */
 }
 
 .contenedor-pantalla {
@@ -273,6 +271,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   z-index: 100;
+  width: 500px;
+  border-radius: 20px;
   
   /* Actualizamos la animación para que mantenga el centrado (translateX) */
   animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -284,9 +284,13 @@ body {
 }
 
 .texto-seguidor {
-  font-size: 1.5em;
+  font-size: 2.8rem;
   color: #fff;
   margin: 0 0 15px 0;
+}
+
+.texto-seguidor span{
+  font-weight: bolder;
 }
 
 .info-premio p {
@@ -296,7 +300,7 @@ body {
 }
 
 .img-ganador-cartel {
-  height: 120px;
+  height: 150px;
   width: auto;
   margin: 15px 0;
   filter: drop-shadow(0 0 20px var(--rango-color, #fff));
@@ -324,7 +328,7 @@ body {
   padding: 10px;
   border-radius: 6px;
   font-weight: 900;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: white;
   text-transform: uppercase;
   letter-spacing: 1px;

@@ -111,7 +111,6 @@ return (
     // Contenedor principal que SIEMPRE está visible
     <div className="contenedor-general">
       
-      {/* --- NUEVO: BANNER DE ESPERA --- */}
       {/* Se muestra solo cuando 'visible' es false */}
       <div className={`banner-espera ${!visible ? 'activo' : ''}`}>
         {/* <h1>🎯 FOLLOW = RULETA 🎯</h1> */}
@@ -143,15 +142,14 @@ return (
 
         {ganador && (
           <div className={`cartel-ganador ${ganador.toLowerCase() === 'unreal' ? 'ganador-unreal' : ''}`}>
-            <p className="texto-seguidor">¡Gracias por el follow, {usuario}!</p>
+            <p className="texto-seguidor">¡Gracias por el follow, <span>{usuario}</span>!</p>
             <div className="info-premio">
-              <p>Quedaste en:</p>
               <img src={CONFIG_RANGOS[ganador].img} alt={ganador} className="img-ganador-cartel" />
               <h1 className="nombre-ganador-cartel" style={{color: CONFIG_RANGOS[ganador].color}}>{ganador}</h1>
             </div>
             {ganador === 'Unreal' && (
               <div className="alerta-unreal">
-                🔥 ¡🏆 PREMIO DETECTADO! RECLAMÁ AL PRIVADO 🏆 🔥
+                🔥 🏆 RECLAMÁ EL PREMIO AL PRIVADO 🏆 🔥
               </div>
             )}
           </div>
