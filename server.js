@@ -26,7 +26,7 @@ const rangos = [
   { nombre: "Diamante", probabilidad: 10 },
   { nombre: "Élite", probabilidad: 4 },
   { nombre: "As", probabilidad: 1 },
-  { nombre: "Unreal", probabilidad: 0.00 }, // 0.01 Probabilidad
+  { nombre: "Unreal", probabilidad: 0.0 }, // 0.01 Probabilidad
 ];
 
 // Función matemática para elegir un rango según su porcentaje
@@ -42,64 +42,114 @@ function sortearRango() {
   return "Plata"; // Por defecto
 }
 
+// ==========================================
+// SISTEMA DE COLA (QUEUE)
+// ==========================================
+let colaFollows = []; // Acá guardamos la fila de gente
+let ruletaOcupada = false; // Semáforo para saber si el frontend está ocupado
+
 if (esSimulador) {
   // --- MODO SIMULADOR ---
   console.log("🛠️ INICIANDO EN MODO SIMULADOR 🛠️");
+  console.log("Esperando 5 segundos para que el frontend se conecte...");
 
-  setInterval(() => {
-    console.log("Testeando: Simulando un follow automático...");
-    const rangoGanador = sortearRango();
+  // Esperamos 5 segundos antes de disparar la ráfaga
+  setTimeout(() => {
+    console.log("¡Disparando ráfaga de 5 follows!");
 
-    io.emit("girarRuleta", {
-      usuario: "TestUser_" + Math.floor(Math.random() * 1000),
-      rango: rangoGanador,
-    });
-  }, 15000);
+    for (let index = 0; index < 5; index++) {
+      const rangoGanador = sortearRango();
+
+      colaFollows.push({
+        usuario: "TestUser_" + Math.floor(Math.random() * 1000),
+        rango: rangoGanador,
+      });
+
+      // Intentamos procesar la fila
+      procesarCola();
+    }
+  }, 5000);
 } else {
   // --- MODO TIKTOK LIVE ---
   console.log("📡 INICIANDO EN MODO TIKTOK LIVE 📡");
 
   // Crear la conexión a TikTok
   const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
-  
+
   // Escuchar cuando alguien da Follow
   tiktokLiveConnection.on("follow", (data) => {
-    console.log(`¡${data.uniqueId} te ha seguido!`);
-    
-    // Sorteamos el rango
+    console.log(`¡${data.uniqueId} te ha seguido! Entrando a la fila...`);
+
+    // Sorteamos el rango apenas llega el follow
     const rangoGanador = sortearRango();
-    console.log(`Resultado de la ruleta: ${rangoGanador}`);
-    
-    // Le avisamos al frontend por WebSocket para que empiece a girar la ruleta
-    io.emit("girarRuleta", {
+
+    // Lo empujamos al final de la fila (array)
+    colaFollows.push({
       usuario: data.uniqueId,
       rango: rangoGanador,
     });
+
+    // Intentamos procesar la fila
+    procesarCola();
   });
-  
+
   // Envolvemos la conexión en una función para poder llamarla varias veces
   function conectarTikTok() {
     console.log(`Intentando conectar con la cuenta: @${tiktokUsername}...`);
-    
+
     tiktokLiveConnection
-    .connect()
-    .then((state) => {
-      console.info(`✅ Conectado al directo. ID de sala: ${state.roomId}`);
-    })
-    .catch((err) => {
-      console.error(
-        "❌ Error al conectar (¿El directo está apagado?). Reintentando en 15 segundos...",
-      );
-      
-      // Si falla, esperamos 15 segundos (15000 ms) y volvemos a ejecutar esta misma función
-      setTimeout(() => {
-        conectarTikTok();
-      }, 15000);
-    });
+      .connect()
+      .then((state) => {
+        console.info(`✅ Conectado al directo. ID de sala: ${state.roomId}`);
+      })
+      .catch((err) => {
+        console.error(
+          "❌ Error al conectar (¿El directo está apagado?). Reintentando en 60 segundos...",
+        );
+        console.error(err);
+
+        // Si falla, esperamos 15 segundos (15000 ms) y volvemos a ejecutar esta misma función
+        setTimeout(() => {
+          conectarTikTok();
+        }, 60000);
+      });
   }
-  
+
   // Llamamos a la función por primera vez para arrancar el ciclo
   conectarTikTok();
+}
+
+// Función que maneja los turnos
+function procesarCola() {
+  // Si la ruleta está en uso, o si no hay nadie en la fila, no hacemos nada
+  if (ruletaOcupada || colaFollows.length === 0) {
+    return;
+  }
+  console.log("Cola:", colaFollows);
+
+  // Ponemos el semáforo en rojo
+  ruletaOcupada = true;
+
+  // Sacamos al primero de la fila (shift elimina el primer elemento y te lo devuelve)
+  const turnoActual = colaFollows.shift();
+
+  console.log(
+    `Lanzando ruleta para: ${turnoActual.usuario} (${turnoActual.rango})`,
+  );
+  console.log(`Quedan ${colaFollows.length} personas en espera.`);
+
+  // Le avisamos al frontend por WebSocket
+  io.emit("girarRuleta", turnoActual);
+
+  // ==========================================
+  // EL TIEMPO DE ESPERA (Crucial)
+  // ==========================================
+  // Acá le decimos al backend cuánto tiempo debe esperar antes de mandar el siguiente.
+  // Según nuestro frontend: 7s (giro) + 5s (cartel) + 1s (desvanecer) = ~13 segundos.
+  setTimeout(() => {
+    ruletaOcupada = false; // Ponemos el semáforo en verde
+    procesarCola(); // Revisamos si quedó alguien más en la fila y lo lanzamos
+  }, 13000);
 }
 
 // ==========================================
