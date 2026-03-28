@@ -8,32 +8,62 @@ const { WebcastPushConnection } = require("tiktok-live-connector");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" }, // Permite que el frontend en React se conecte sin problemas
+  cors: { origin: "*" },
 });
 
-// Tu nombre de usuario de TikTok
-const tiktokUsername = process.env.USERNAME_TIKTOK;
-//console.log(tiktokUsername)
+// ==========================================
+// VARIABLES DE ENTORNO
+// ==========================================
 
-// Si MODO_SIMULADOR es "true" en el .env, la variable será verdadera
+const tiktokUsername = process.env.USERNAME_TIKTOK;
 const esSimulador = process.env.SIMULADOR === "true";
 
-// Sistema de probabilidades (Los rangos de Fortnite)
-const rangos = [
-  { nombre: "Plata", probabilidad: 40 },
-  { nombre: "Oro", probabilidad: 30 },
-  { nombre: "Platino", probabilidad: 15 },
-  { nombre: "Diamante", probabilidad: 10 },
-  { nombre: "Élite", probabilidad: 4 },
-  { nombre: "As", probabilidad: 1 },
-  { nombre: "Unreal", probabilidad: 0.0 }, // 0.01 Probabilidad
-];
+// ==========================================
+// SISTEMA DE PROBABILIDADES
+// ==========================================
 
-// Función matemática para elegir un rango según su porcentaje
-function sortearRango() {
+// Función dinamica para sortear
+function sortearRangoDinamico(esRegalo = false, monedasGastadas = 0) {
+  let tabla = [
+    { nombre: "Plata", probabilidad: 30 },
+    { nombre: "Oro", probabilidad: 25 },
+    { nombre: "Platino", probabilidad: 20 },
+    { nombre: "Diamante", probabilidad: 10 },
+    { nombre: "Élite", probabilidad: 8 },
+    { nombre: "As", probabilidad: 6 },
+    { nombre: "Unreal", probabilidad: 1 },
+  ];
+  // let tabla = [
+  //   { nombre: "Plata", probabilidad: 30 },
+  //   { nombre: "Oro", probabilidad: 20 },
+  //   { nombre: "Platino", probabilidad: 0 },
+  //   { nombre: "Diamante", probabilidad: 0 },
+  //   { nombre: "Élite", probabilidad: 0 },
+  //   { nombre: "As", probabilidad: 0 },
+  //   { nombre: "Unreal", probabilidad: 50 },
+  // ];
+
+  if (esRegalo && monedasGastadas > 0) {
+    // Calculamos el Bonus. Cada moneda da un +0.5% al Unreal.
+    let bonusUnreal = monedasGastadas * 0.5;
+
+    // Restamos probabilidad a Plata y Oro, y subimos unreal
+    tabla[0].probabilidad -= bonusUnreal;
+    if (tabla[0].probabilidad < 0) {
+      tabla[1].probabilidad += tabla[0].probabilidad;
+      tabla[0].probabilidad = 0;
+    }
+    tabla[6].probabilidad += bonusUnreal; // Inyectamos todo el bonus directo al Unreal
+
+    // Tope
+    if (tabla[6].probabilidad > 100) {
+      tabla[6].probabilidad = 100;
+    }
+  }
+
   const random = Math.random() * 100;
   let acumulado = 0;
-  for (const rango of rangos) {
+  for (const rango of tabla) {
     acumulado += rango.probabilidad;
     if (random <= acumulado) {
       return rango.nombre;
@@ -49,51 +79,55 @@ let colaFollows = []; // Acá guardamos la fila de gente
 let ruletaOcupada = false; // Semáforo para saber si el frontend está ocupado
 
 if (esSimulador) {
-  // --- MODO SIMULADOR ---
+  // ==========================================
+  // MODO SIMULADOR
+  // ==========================================
   console.log("🛠️ INICIANDO EN MODO SIMULADOR 🛠️");
   console.log("Esperando 5 segundos para que el frontend se conecte...");
 
-  // Esperamos 5 segundos antes de disparar la ráfaga
-  setTimeout(() => {
-    console.log("¡Disparando ráfaga de 5 follows!");
+  function simuladorAcciones(){
 
-    for (let index = 0; index < 5; index++) {
-      const rangoGanador = sortearRango();
-
-      colaFollows.push({
-        usuario: "TestUser_" + Math.floor(Math.random() * 1000),
-        rango: rangoGanador,
-      });
-
-      // Intentamos procesar la fila
-      procesarCola();
+    cantidad = 0;
+    follow = false;
+    accionSimulador = "Follow";
+    random = Math.floor(Math.random() * 1000);
+    if (random % 2 === 0){
+      cantidad = 100;
+      follow = true;
+      accionSimulador = "Rosa";
     }
+
+    const rangoGanador = sortearRangoDinamico(follow, cantidad);
+
+    // Lo empujamos al final de la fila (array)
+    colaFollows.push({
+      usuario: "TestUser_" + random,
+      rango: rangoGanador,
+      accion: follow ?`${cantidad}x ${accionSimulador}`: accionSimulador,
+    });
+
+    procesarCola();
+  }
+
+  // Esperamos 5 segundos antes de arrancar
+  setTimeout(() => {
+    console.log("¡Disparando ráfaga!");
+
+    // Ejecuta cada 5 segundos
+    setInterval(simuladorAcciones, 5000);
+
   }, 5000);
 } else {
-  // --- MODO TIKTOK LIVE ---
+  // ==========================================
+  // MODO TIKTOK LIVE
+  // ==========================================
   console.log("📡 INICIANDO EN MODO TIKTOK LIVE 📡");
 
   // Crear la conexión a TikTok
   const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
 
-  // Escuchar cuando alguien da Follow
-  tiktokLiveConnection.on("follow", (data) => {
-    console.log(`¡${data.uniqueId} te ha seguido! Entrando a la fila...`);
-
-    // Sorteamos el rango apenas llega el follow
-    const rangoGanador = sortearRango();
-
-    // Lo empujamos al final de la fila (array)
-    colaFollows.push({
-      usuario: data.uniqueId,
-      rango: rangoGanador,
-    });
-
-    // Intentamos procesar la fila
-    procesarCola();
-  });
-
-  // Envolvemos la conexión en una función para poder llamarla varias veces
+  
+  // Conexion con tiktok
   function conectarTikTok() {
     console.log(`Intentando conectar con la cuenta: @${tiktokUsername}...`);
 
@@ -103,17 +137,58 @@ if (esSimulador) {
         console.info(`✅ Conectado al directo. ID de sala: ${state.roomId}`);
       })
       .catch((err) => {
-        console.error(
-          "❌ Error al conectar (¿El directo está apagado?). Reintentando en 60 segundos...",
-        );
+        console.error("❌ Error al conectar. Reintentando en 60 segundos...");
         console.error(err);
 
-        // Si falla, esperamos 15 segundos (15000 ms) y volvemos a ejecutar esta misma función
+        // Si falla, esperamos 60
         setTimeout(() => {
           conectarTikTok();
         }, 60000);
       });
   }
+
+  // FOLLOWS
+  tiktokLiveConnection.on("follow", (data) => {
+    console.log(`¡${data.uniqueId} te ha seguido! Entrando a la fila...`);
+
+    const rangoGanador = sortearRangoDinamico(false, 0);
+
+    // Lo empujamos al final de la fila (array)
+    colaFollows.push({
+      usuario: data.uniqueId,
+      rango: rangoGanador,
+      accion: "Follow",
+    });
+
+    procesarCola();
+  });
+
+  // REGALOS
+  tiktokLiveConnection.on("gift", (data) => {
+    // Esperamos a que termine el combo para calcular el total
+    if (data.giftType === 1 && !data.repeatEnd) {
+      return;
+    }
+
+    const monedasTotales = data.diamondCount * data.repeatCount; // Costo x Cantidad enviada
+
+    console.log(
+      `🎁 ${data.uniqueId} mandó ${data.repeatCount}x ${data.giftName} (Total: ${monedasTotales} monedas)`,
+    );
+
+    //Envio el total de monedad invertidas
+    const rangoGanador = sortearRangoDinamico(true, monedasTotales);
+
+    // Lo mandamos a la fila
+    colaFollows.push({
+      usuario: data.uniqueId,
+      rango: rangoGanador,
+      // Mandamos el nombre del regalo al frontend para mostrarlo en pantalla
+      accion: `${data.repeatCount}x ${data.giftName}`,
+    });
+
+    procesarCola();
+  });
 
   // Llamamos a la función por primera vez para arrancar el ciclo
   conectarTikTok();

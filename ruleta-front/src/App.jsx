@@ -19,8 +19,8 @@ const CONFIG_RANGOS = {
 const NOMBRES_RANGOS = Object.keys(CONFIG_RANGOS);
 
 // Conexion backend
-//const socket = io('http://localhost:3001');
-const socket = io('https://ruleta-fortnite-backend.onrender.com');
+const socket = io('http://localhost:3001');
+//const socket = io('https://ruleta-fortnite-backend.onrender.com');
 
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
   const [girando, setGirando] = useState(false);
   const [ganador, setGanador] = useState(null);
   const [usuario, setUsuario] = useState('');
+  const [accion, setAccion] = useState('');
   const [itemsRuleta, setItemsRuleta] = useState([]);
   
   const ruletaRef = useRef(null);
@@ -49,6 +50,8 @@ function App() {
       setGirando(true);
       setGanador(null);
       setUsuario(data.usuario);
+
+      setAccion(data.accion || 'Follow'); // Guardamos si fue un Follow o un Regalo específic
 
       const posicionGanadora = 85;
       const nuevosItems = Array.from({ length: 100 }, () => 
@@ -142,14 +145,25 @@ return (
 
         {ganador && (
           <div className={`cartel-ganador ${ganador.toLowerCase() === 'unreal' ? 'ganador-unreal' : ''}`}>
-            <p className="texto-seguidor">¡Gracias por el follow, <span>{usuario}</span>!</p>
+
+            {(accion === 'Follow') ?
+              <p className="texto-seguidor">
+                ¡Gracias por el follow, {usuario}!
+              </p>
+              :
+              <p className="texto-seguidor">
+                ¡Gracias por enviar <br />
+                {accion}, {usuario}!
+              </p>
+            }
+
             <div className="info-premio">
               <img src={CONFIG_RANGOS[ganador].img} alt={ganador} className="img-ganador-cartel" />
               <h1 className="nombre-ganador-cartel" style={{color: CONFIG_RANGOS[ganador].color}}>{ganador}</h1>
             </div>
             {ganador === 'Unreal' && (
               <div className="alerta-unreal">
-                🔥 🏆 RECLAMÁ EL PREMIO AL PRIVADO 🏆 🔥
+                RECLAMÁ EL PREMIO AL PRIVADO 
               </div>
             )}
           </div>
