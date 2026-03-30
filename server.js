@@ -29,9 +29,9 @@ function sortearRangoDinamico(esRegalo = false, monedasGastadas = 0) {
     { nombre: "Oro", probabilidad: 25 },
     { nombre: "Platino", probabilidad: 20 },
     { nombre: "Diamante", probabilidad: 10 },
-    { nombre: "Élite", probabilidad: 8 },
+    { nombre: "Élite", probabilidad: 8.9 },
     { nombre: "As", probabilidad: 6 },
-    { nombre: "Unreal", probabilidad: 1 },
+    { nombre: "Unreal", probabilidad: 0.1 },
   ];
   // let tabla = [
   //   { nombre: "Plata", probabilidad: 30 },
@@ -45,7 +45,7 @@ function sortearRangoDinamico(esRegalo = false, monedasGastadas = 0) {
 
   if (esRegalo && monedasGastadas > 0) {
     // Calculamos el Bonus. Cada moneda da un +0.5% al Unreal.
-    let bonusUnreal = monedasGastadas * 0.5;
+    let bonusUnreal = monedasGastadas * 0.1;
 
     // Restamos probabilidad a Plata y Oro, y subimos unreal
     tabla[0].probabilidad -= bonusUnreal;
