@@ -3,7 +3,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: red; /* Fundamental para OBS */
+  background: transparent; /* Fundamental para OBS */
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
 }
