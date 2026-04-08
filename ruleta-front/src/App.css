@@ -17,16 +17,15 @@ body {
 }
 
 /* La zona de la ruleta ahora maneja el fade in/out */
-/* La zona de la ruleta ahora maneja el fade in/out */
 .zona-ruleta {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  
-  /* --- CAMBIO: Alinear arriba en vez de al centro --- */
   justify-content: flex-start;
-  padding-top: 100px; /* Distancia desde el borde superior del OBS */
+  
+  /* --- CAMBIO: Lo subimos casi al máximo --- */
+  padding-top: 30px; 
   
   align-items: center;
   opacity: 0;
@@ -42,10 +41,10 @@ body {
 .banner-espera {
   position: absolute;
   
-  /* --- CAMBIO: Lo ubicamos arriba (a los 130px del techo) --- */
-  top: 130px; 
+  /* --- CAMBIO: Centrado con la nueva posición de la ruleta --- */
+  top: 110px; 
   left: 50%;
-  transform: translate(-50%, 0); 
+  transform: translate(-50%, -50%); 
   
   text-align: center;
   background: transparent; 
@@ -66,9 +65,9 @@ body {
 }
 
 @keyframes flotar {
-  0% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, -10px); }
-  100% { transform: translate(-50%, 0); }
+  0% { transform: translate(-50%, -50%); }
+  50% { transform: translate(-50%, -55%); } /* Flote sutil hacia arriba */
+  100% { transform: translate(-50%, -50%); }
 }
 
 .banner-espera h1 {
@@ -269,8 +268,8 @@ body {
 .cartel-ganador {
   position: absolute;
   
-  /* --- CAMBIO: Lo clavamos cómodamente en la mitad inferior --- */
-  top: 300px; 
+  /* --- CAMBIO: Lo subimos justo debajo de la ruleta --- */
+  top: 210px; 
   left: 50%; 
   
   background: rgba(10, 10, 15, 0.95);
@@ -281,9 +280,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   z-index: 100;
-  width: 500px; /* Le devolvemos su ancho original */
-  
-  /* La animación popIn original que tenías (se encarga del centrado en X) */
+  width: 500px; 
   animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -332,15 +329,16 @@ body {
 }
 
 .alerta-unreal {
-  margin-top: 20px;
+  margin-top: 15px; /* Un poco menos de margen para que no empuje tanto hacia abajo */
   background: linear-gradient(90deg, #ff1493, #8a2be2);
-  padding: 10px;
-  border-radius: 6px;
+  padding: 4px 10px; /* Padding ajustado para que respire bien */
+  border-radius: 8px;
   font-weight: 900;
-  font-size: 1.5rem;
+  font-size: 1.4rem; /* Tamaño intermedio: ni gigante ni minúsculo */
   color: white;
   text-transform: uppercase;
   letter-spacing: 1px;
+  box-shadow: 0 5px 15px rgba(255, 20, 147, 0.4); /* Le sumamos un brillito propio para que destaque más */
 }
 
 @keyframes pulsoUnreal {

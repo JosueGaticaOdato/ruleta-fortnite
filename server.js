@@ -34,13 +34,13 @@ function sortearRangoDinamico(esRegalo = false, monedasGastadas = 0) {
     { nombre: "Unreal", probabilidad: 0.1 },
   ];
   // let tabla = [
-  //   { nombre: "Plata", probabilidad: 30 },
-  //   { nombre: "Oro", probabilidad: 20 },
+  //   { nombre: "Plata", probabilidad: 0 },
+  //   { nombre: "Oro", probabilidad: 0 },
   //   { nombre: "Platino", probabilidad: 0 },
   //   { nombre: "Diamante", probabilidad: 0 },
   //   { nombre: "Élite", probabilidad: 0 },
   //   { nombre: "As", probabilidad: 0 },
-  //   { nombre: "Unreal", probabilidad: 50 },
+  //   { nombre: "Unreal", probabilidad: 100 },
   // ];
 
   if (esRegalo && monedasGastadas > 0) {
