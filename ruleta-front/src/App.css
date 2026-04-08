@@ -3,7 +3,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: transparent; /* Fundamental para OBS */
+  background: red; /* Fundamental para OBS */
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
 }
@@ -40,6 +40,7 @@ body {
 
 .banner-espera {
   position: absolute;
+  height: 140px;
   
   /* --- CAMBIO: Centrado con la nueva posición de la ruleta --- */
   top: 110px; 
@@ -57,6 +58,41 @@ body {
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
   z-index: 5;
+}
+
+.mensaje-banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.8s ease-in-out; /* Transición súper suave */
+  pointer-events: none;
+}
+
+.mensaje-banner.visible {
+  opacity: 1;
+}
+
+.mensaje-banner.oculto {
+  opacity: 0;
+}
+
+.mensaje-banner h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: #fff;
+  margin: 0 0 5px 0;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.mensaje-banner p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.8rem;
+  color: #fff;
+  margin: 0;
+  font-weight: 900;
 }
 
 .banner-espera.activo {

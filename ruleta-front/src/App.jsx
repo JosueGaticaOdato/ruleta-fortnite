@@ -30,8 +30,19 @@ function App() {
   const [usuario, setUsuario] = useState('');
   const [accion, setAccion] = useState('');
   const [itemsRuleta, setItemsRuleta] = useState([]);
+  const [mostrarFollow, setMostrarFollow] = useState(true);
   
   const ruletaRef = useRef(null);
+
+  useEffect(() => {
+    // Cambia el estado de true a false cada 5 segundos (5000 ms)
+    const intervalo = setInterval(() => {
+      setMostrarFollow((prev) => !prev);
+    }, 5000);
+
+    // Limpiamos el intervalo si el componente se desmonta
+    return () => clearInterval(intervalo);
+  }, []);
 
   useEffect(() => {
     const itemsRelleno = Array.from({ length: 100 }, () => 
@@ -114,11 +125,28 @@ return (
     // Contenedor principal que SIEMPRE está visible
     <div className="contenedor-general">
       
-      {/* Se muestra solo cuando 'visible' es false */}
+      {/* Se muestra solo cuando 'visible' es false
       <div className={`banner-espera ${!visible ? 'activo' : ''}`}>
-        {/* <h1>🎯 FOLLOW = RULETA 🎯</h1> */}
+        <h1>🎯 FOLLOW = RULETA 🎯</h1>
         <h1>FOLLOW = RULETA</h1>
         <p>SI SALE <span className="texto-unreal-banner">UNREAL</span> TE REGALO UN CLUB DE FORTNITE</p>
+      </div> */}
+
+      {/* --- BANNER DE ESPERA DINÁMICO --- */}
+      <div className={`banner-espera ${!visible ? 'activo' : ''}`}>
+        
+        {/* Mensaje 1: Follow Normal */}
+        <div className={`mensaje-banner ${mostrarFollow ? 'visible' : 'oculto'}`}>
+          <h1>FOLLOW = RULETA</h1>
+          <p>SI SALE <span className="texto-unreal-banner">UNREAL</span> TE REGALO UN CLUB DE FORTNITE</p>
+        </div>
+
+        {/* Mensaje 2: Regalos / VIP */}
+        <div className={`mensaje-banner ${!mostrarFollow ? 'visible' : 'oculto'}`}>
+          <h1>REGALOS = RULETA VIP</h1>
+          <p>MÁS MONEDAS = MÁS CHANCES DE <span className="texto-unreal-banner">UNREAL</span></p>
+        </div>
+
       </div>
 
       {/* --- ZONA DE LA RULETA --- */}
