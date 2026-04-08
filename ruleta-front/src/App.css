@@ -17,16 +17,21 @@ body {
 }
 
 /* La zona de la ruleta ahora maneja el fade in/out */
+/* La zona de la ruleta ahora maneja el fade in/out */
 .zona-ruleta {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  
+  /* --- CAMBIO: Alinear arriba en vez de al centro --- */
+  justify-content: flex-start;
+  padding-top: 100px; /* Distancia desde el borde superior del OBS */
+  
   align-items: center;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
-  pointer-events: none; /* Evita clicks accidentales cuando está oculta */
+  pointer-events: none;
   z-index: 10;
 }
 
@@ -34,24 +39,21 @@ body {
   opacity: 1;
 }
 
-/* --- NUEVO: BANNER DE ESPERA ADAPTADO A 800px --- */
 .banner-espera {
   position: absolute;
-  top: 50%;
+  
+  /* --- CAMBIO: Lo ubicamos arriba (a los 130px del techo) --- */
+  top: 130px; 
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0); 
+  
   text-align: center;
   background: transparent; 
-  
-  /* Ajustes para el ancho de 800px */
-  width: 85%; /* Ocupa el 85% de los 800px, dejando un lindo margen a los lados */
+  width: 85%; 
   max-width: 650px; 
-  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+  box-sizing: border-box; 
   padding: 25px 20px; 
-  
   border-radius: 16px;
-  /* border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.8); */
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
@@ -60,6 +62,13 @@ body {
 
 .banner-espera.activo {
   opacity: 1;
+  animation: flotar 4s ease-in-out infinite;
+}
+
+@keyframes flotar {
+  0% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -10px); }
+  100% { transform: translate(-50%, 0); }
 }
 
 .banner-espera h1 {
@@ -258,23 +267,23 @@ body {
 
 /* --- Cartel Ganador --- */
 .cartel-ganador {
-  /* Lo hacemos flotante para que no empuje la ruleta */
   position: absolute;
-  top: calc(50% + 100px); /* Lo ubicamos 100px por debajo del centro de la pantalla */
-  left: 50%; /* Centrado horizontal */
+  
+  /* --- CAMBIO: Lo clavamos cómodamente en la mitad inferior --- */
+  top: 300px; 
+  left: 50%; 
   
   background: rgba(10, 10, 15, 0.95);
   color: white;
-  padding: 25px 50px;
-  border-radius: 12px;
+  padding: 20px 40px;
+  border-radius: 20px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   z-index: 100;
-  width: 500px;
-  border-radius: 20px;
+  width: 500px; /* Le devolvemos su ancho original */
   
-  /* Actualizamos la animación para que mantenga el centrado (translateX) */
+  /* La animación popIn original que tenías (se encarga del centrado en X) */
   animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -284,9 +293,9 @@ body {
 }
 
 .texto-seguidor {
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   color: #fff;
-  margin: 0 0 15px 0;
+  margin: 0 0 10px 0;
 }
 
 .texto-seguidor span{
@@ -300,9 +309,9 @@ body {
 }
 
 .img-ganador-cartel {
-  height: 150px;
+  height: 120px; 
   width: auto;
-  margin: 15px 0;
+  margin: 10px 0;
   filter: drop-shadow(0 0 20px var(--rango-color, #fff));
 }
 
