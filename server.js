@@ -76,7 +76,8 @@ function sortearRangoDinamico(esRegalo = false, monedasGastadas = 0) {
 // SISTEMA DE COLA (QUEUE)
 // ==========================================
 let colaFollows = []; // Acá guardamos la fila de gente
-let ruletaOcupada = false; // Semáforo para saber si el frontend está ocupado
+let ruletaOcupada = false; // Semáforo para saber si el frontend está ocupado.
+const usuariosQueYaSiguieron = new Set(); // Memoria para guardar quién ya nos siguió en este directo
 
 if (esSimulador) {
   // ==========================================
@@ -149,6 +150,15 @@ if (esSimulador) {
 
   // FOLLOWS
   tiktokLiveConnection.on("follow", (data) => {
+
+    if (usuariosQueYaSiguieron.has(data.uniqueId)){
+      console.log(`♻️ Refollow ignorado: ${data.uniqueId} ya había girado la ruleta.`);
+      return; // Cortamos la ejecución acá, no hace nada más
+    }
+
+    // 2. Si es un follow nuevo, lo anotamos en la memoria para que no pueda repetir
+    usuariosQueYaSiguieron.add(data.uniqueId);
+
     console.log(`¡${data.uniqueId} te ha seguido! Entrando a la fila...`);
 
     const rangoGanador = sortearRangoDinamico(false, 0);
